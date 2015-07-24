@@ -83,9 +83,17 @@ static NSString *cellChannelID=@"cellChannelID";
     NSManagedObject *videos = [self.videos objectAtIndex:indexPath.row];
     
     cell.channelTitle.text = [NSString stringWithFormat:@"%@",[videos valueForKey:@"titleVideo" ]];
-    cell.channelImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[videos valueForKey:@"thumbnailVideo"]]]];
     cell.channelID.text = [NSString stringWithFormat:@"%@",[videos  valueForKey:@"timeVideo"]];
     
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSData *imageData=[NSData dataWithContentsOfURL:[NSURL URLWithString:[videos valueForKey:@"thumbnailVideo"]]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            cell.channelImage.image = [UIImage imageWithData:imageData];
+            
+        });
+    });
+
     return cell;
 }
 

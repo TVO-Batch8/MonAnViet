@@ -206,7 +206,15 @@ static NSString *cellChannelID=@"cellChannelID";
         [self presentViewController:controller animated:YES completion:nil];
     } else {
         NSLog(@"The FB service is not available");
-    }
+        SLComposeViewController *controller =
+        [SLComposeViewController
+         composeViewControllerForServiceType:SLServiceTypeFacebook];
+        [controller setInitialText:@"Các món ăn ngon đây"];
+        [controller addURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://www.youtube.com/watch?v=%@&index=%d&list=%@",idVD,index,self.idPlaylist]]];
+        controller.completionHandler = ^(SLComposeViewControllerResult result){
+            NSLog(@"Completed");
+        };
+        [self presentViewController:controller animated:YES completion:nil];    }
 }
 
 - (IBAction)favoriteVideo:(id)sender {
@@ -371,10 +379,17 @@ static NSString *cellChannelID=@"cellChannelID";
     if (!cell) {
         cell = [tableView dequeueReusableCellWithIdentifier:cellChannelID];
     }
-    cell.channelImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[[self.arrVideo objectAtIndex:1] objectAtIndex:indexPath.row]]]];
     cell.channelTitle.text = [NSString stringWithFormat:@"%@",[[self.arrVideo objectAtIndex:2] objectAtIndex:indexPath.row]];
     cell.channelID.text = [NSString stringWithFormat:@"%@",[[self.arrVideo objectAtIndex:4] objectAtIndex:indexPath.row]];
     
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSData *imageData=[NSData dataWithContentsOfURL:[NSURL URLWithString:[[self.arrVideo objectAtIndex:1] objectAtIndex:indexPath.row]]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            cell.channelImage.image = [UIImage imageWithData:imageData];
+            
+        });
+    });
+
     return cell;
 
 }

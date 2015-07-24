@@ -38,29 +38,29 @@ bool searchChannel=NO;
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self initData];
-     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNetworkStatusNotification:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNetworkStatusNotification:) name:kReachabilityChangedNotification object:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     self.reachability = [Reachability reachabilityForInternetConnection];
     [self.reachability startNotifier];
     //    NSLog(@"%ld", self.reachability.currentReachabilityStatus);
-   
+    
 }
 
 - (void)handleNetworkStatusNotification:(NSNotification *)note {
     Reachability* curReach = [note object];
     NetworkStatus status = curReach.currentReachabilityStatus;
-
+    
     switch (status) {
         case NotReachable:
         {
-             NSLog(@"Internet off");
+            NSLog(@"Internet off");
             UIAlertView *alertError =[[UIAlertView alloc]initWithTitle:@"Error!!!" message:@"Internet not reachable" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
             [alertError show];
         }
             break;
-   
+            
         case ReachableViaWiFi:
         {
             NSLog(@"Internet on");
@@ -68,7 +68,7 @@ bool searchChannel=NO;
             [alertWifi show];
         }
             break;
-        
+            
         case ReachableViaWWAN:
         {
             NSLog(@"Internet on");
@@ -86,8 +86,7 @@ bool searchChannel=NO;
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     self.channelTableView.backgroundColor = [UIColor grayColor];
-     self.view.backgroundColor = [UIColor   brownColor ];
-//    self.tabBarController.tabBar.backgroundImage = [UIImage imageNamed:@"black.jpg"];
+    self.view.backgroundColor = [UIColor   brownColor ];
     // Fetch the devices from persistent data store
     NSManagedObjectContext *managedObjectContext = [self managedObjectContext];
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Channel"];
@@ -97,7 +96,6 @@ bool searchChannel=NO;
     
     [fetchRequest setSortDescriptors:sortDescriptors];
     self.channels = [[managedObjectContext executeFetchRequest:fetchRequest error:nil] mutableCopy];
-    
     [self.channelTableView reloadData];
     
 }
@@ -150,8 +148,6 @@ bool searchChannel=NO;
     NSManagedObject *channels = [self.channels objectAtIndex:indexPath.row];
     
     cell.channelTitle.text = [NSString stringWithFormat:@"%@",[channels valueForKey:@"titleChannel" ]];
-    cell.channelImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[channels valueForKey:@"thumbnailChannel"]]]];
-    
     NSDate *date = [channels  valueForKey:@"timeChannel"];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -162,6 +158,18 @@ bool searchChannel=NO;
     //    NSLog(@"The Date: %@", dateString);
     
     cell.channelID.text =dateString;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        cell.channelImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[channels valueForKey:@"thumbnailChannel"]]]];
+        
+    });
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSData *imageData=[NSData dataWithContentsOfURL:[NSURL URLWithString:[channels valueForKey:@"thumbnailChannel"]]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            cell.channelImage.image = [UIImage imageWithData:imageData];
+            
+        });
+    });
     
     return cell;
 }
@@ -216,7 +224,7 @@ bool searchChannel=NO;
 #pragma search and connection
 
 -(NSString*)requestURL: (NSString*)keySearch {
-    return [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=%@&type=channel&key=AIzaSyAfc0hEne4bOuLRxqCCN1ndaPx6gpMgjD4",keySearch];
+    return [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=%@+huongdan+nauan&type=channel&key=AIzaSyAfc0hEne4bOuLRxqCCN1ndaPx6gpMgjD4",keySearch] ;
 }
 
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
@@ -243,7 +251,7 @@ bool searchChannel=NO;
 -(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
     self.searchCooking.text = @"";
     //hide keyboard
-    [self resignFirstResponder];
+    [self.searchCooking resignFirstResponder];
 }
 
 
@@ -303,21 +311,33 @@ bool searchChannel=NO;
         [self.arrThumbnailChannel removeAllObjects];
         [self.arrTimeChannel removeAllObjects];
         [self.arrTitleChannel removeAllObjects];
-        for(int i =0; i<self.reponseData.count;i++){
-            
-            NSString *titleChannel =[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"title"];
-            [self.arrTitleChannel addObject:titleChannel];
-            NSLog(@"Channel %ld",(long)self.arrTitleChannel.count);
-            
-            NSString *channelId =[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"channelId"];
-            [self.arrChannelID addObject:channelId];
-            
-            NSString *time =[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"publishedAt"];
-            [self.arrTimeChannel addObject:time];
-            
-            NSString *thumbnail= [[[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"thumbnails"]objectForKey:@"default"]objectForKey:@"url"];
-            [self.arrThumbnailChannel addObject:thumbnail];
-            
+        if(!self.reponseData.count==0){
+            for(int i =0; i<self.reponseData.count;i++){
+                
+                NSString *titleChannel =[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"title"];
+                [self.arrTitleChannel addObject:titleChannel];
+                NSLog(@"Channel %ld",(long)self.arrTitleChannel.count);
+                
+                NSString *channelId =[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"channelId"];
+                [self.arrChannelID addObject:channelId];
+                
+                NSString *time =[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"publishedAt"];
+                [self.arrTimeChannel addObject:time];
+                
+                NSString *thumbnail= [[[[[self.reponseData objectAtIndex:i] objectForKey:@"snippet"] objectForKey:@"thumbnails"]objectForKey:@"default"]objectForKey:@"url"];
+                [self.arrThumbnailChannel addObject:thumbnail];
+                
+            }
+        }
+        else if(self.reponseData.count==0)
+        {
+            UIAlertView *alertView = [[UIAlertView alloc]
+                                      initWithTitle:@"No Channel COOKING."
+                                      message:@"Please search other channels!!!!"
+                                      delegate:self
+                                      cancelButtonTitle:@"Ok"
+                                      otherButtonTitles:nil, nil];
+            [alertView show];
         }
         
         [self.channelTableView reloadData];
@@ -359,7 +379,7 @@ bool searchChannel=NO;
                                       delegate:self
                                       cancelButtonTitle:@"Ok"
                                       otherButtonTitles:nil, nil];
-             [alertView show];
+            [alertView show];
         }
     }
 }
@@ -368,6 +388,7 @@ bool searchChannel=NO;
     NSString *btnTitle = [alertView buttonTitleAtIndex:buttonIndex];
     if ([btnTitle isEqualToString:@"Ok"]) {
         [self.navigationController popToRootViewControllerAnimated:YES];
+        
     }
 }
 
@@ -376,7 +397,7 @@ bool searchChannel=NO;
 -(void)getPlaylistID:(NSString*)channelID{
     
     NSLog(@"Request ChannelID");
-    NSString *requestURL = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=15&channelId=%@&key=AIzaSyAfc0hEne4bOuLRxqCCN1ndaPx6gpMgjD4",channelID];
+    NSString *requestURL = [NSString stringWithFormat:@"https://www.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=50&channelId=%@&key=AIzaSyAfc0hEne4bOuLRxqCCN1ndaPx6gpMgjD4",channelID];
     
     NSURLRequest *theRequest= [NSURLRequest requestWithURL:[NSURL URLWithString:requestURL]cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60];
     

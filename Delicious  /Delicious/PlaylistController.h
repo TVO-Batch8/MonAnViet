@@ -12,6 +12,7 @@
 
 @interface PlaylistController : UIViewController <UITableViewDelegate,UITableViewDataSource>
 
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (weak, nonatomic) IBOutlet UITableView *playlistTableView;
 
 @property (strong,nonatomic) NSMutableArray *idPlaylist;

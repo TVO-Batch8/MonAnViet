@@ -387,54 +387,36 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="efT-qM-maO">
-                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="6AR-My-Uzk" id="IEN-9t-6e1"/>
                                     <outlet property="delegate" destination="6AR-My-Uzk" id="l0L-19-9tQ"/>
                                 </connections>
                             </tableView>
-                            <navigationBar contentMode="scaleToFill" barStyle="blackTranslucent" translatesAutoresizingMaskIntoConstraints="NO" id="DJT-aN-JTb">
-                                <rect key="frame" x="0.0" y="20" width="320" height="44"/>
-                                <textAttributes key="titleTextAttributes">
-                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                </textAttributes>
-                                <items>
-                                    <navigationItem title="Add Channel" id="Oms-qF-oX0">
-                                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="BJZ-O3-sai">
-                                            <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <connections>
-                                                <action selector="done:" destination="6AR-My-Uzk" id="ONF-q7-1rn"/>
-                                            </connections>
-                                        </barButtonItem>
-                                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="DaX-fd-0uE">
-                                            <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <connections>
-                                                <action selector="saveChannel:" destination="6AR-My-Uzk" id="TLu-mg-eEb"/>
-                                            </connections>
-                                        </barButtonItem>
-                                    </navigationItem>
-                                </items>
-                            </navigationBar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="DJT-aN-JTb" firstAttribute="leading" secondItem="efT-qM-maO" secondAttribute="leading" id="EpM-5x-J7R"/>
-                            <constraint firstItem="DJT-aN-JTb" firstAttribute="top" secondItem="pkb-Hw-Hqg" secondAttribute="bottom" id="IS6-4V-3jp"/>
-                            <constraint firstItem="uiS-Yz-Yha" firstAttribute="top" secondItem="efT-qM-maO" secondAttribute="bottom" id="cWZ-Ex-Jyk"/>
-                            <constraint firstItem="efT-qM-maO" firstAttribute="leading" secondItem="J4o-Jb-Oav" secondAttribute="leading" id="fxH-nV-UKN"/>
-                            <constraint firstAttribute="trailing" secondItem="DJT-aN-JTb" secondAttribute="trailing" id="mFe-fy-V68"/>
-                            <constraint firstItem="efT-qM-maO" firstAttribute="top" secondItem="DJT-aN-JTb" secondAttribute="bottom" id="tKL-zb-TpT"/>
-                            <constraint firstAttribute="trailing" secondItem="efT-qM-maO" secondAttribute="trailing" id="uGr-qw-dV6"/>
+                            <constraint firstItem="uiS-Yz-Yha" firstAttribute="top" secondItem="efT-qM-maO" secondAttribute="bottom" id="Cg3-Aa-YMt"/>
+                            <constraint firstItem="efT-qM-maO" firstAttribute="top" secondItem="J4o-Jb-Oav" secondAttribute="top" id="RzV-SJ-6EV"/>
+                            <constraint firstAttribute="trailing" secondItem="efT-qM-maO" secondAttribute="trailing" id="VqC-Lr-4n0"/>
+                            <constraint firstItem="efT-qM-maO" firstAttribute="leading" secondItem="J4o-Jb-Oav" secondAttribute="leading" id="m2H-Kt-nRH"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="a8O-Gk-uuK">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="c2k-fA-XZH">
+                            <connections>
+                                <action selector="saveChannel:" destination="6AR-My-Uzk" id="Q6a-S3-U4W"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="addChannelTable" destination="efT-qM-maO" id="E6M-bk-sSp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fjz-tx-G2r" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-217" y="-1006"/>
+            <point key="canvasLocation" x="77" y="-965"/>
         </scene>
         <!--Channel Delicious-->
         <scene sceneID="zvR-C5-aFJ">
@@ -482,8 +464,8 @@
                     <connections>
                         <outlet property="channelTableView" destination="3ab-Oq-Ra0" id="NSc-hI-f2T"/>
                         <outlet property="searchCooking" destination="MII-v8-dUf" id="2jI-a1-Rqf"/>
-                        <segue destination="6AR-My-Uzk" kind="modal" identifier="segueAdd" id="Sx5-rp-mja"/>
                         <segue destination="GiD-Qe-lIO" kind="push" identifier="seguePlaylist" id="wmQ-Gh-KLd"/>
+                        <segue destination="6AR-My-Uzk" kind="push" identifier="segueAdd" id="Dx2-Pp-XNg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DIW-CT-Sd1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -502,8 +484,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="lMv-MN-vd7">
+                                <rect key="frame" x="142" y="266" width="37" height="37"/>
+                                <color key="color" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="uev-u3-FSH">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="dataSource" destination="GiD-Qe-lIO" id="rX1-ac-g43"/>
@@ -513,14 +499,17 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="1B4-OQ-GNo" firstAttribute="top" secondItem="uev-u3-FSH" secondAttribute="bottom" id="5XD-gM-Z7r"/>
-                            <constraint firstItem="uev-u3-FSH" firstAttribute="top" secondItem="oew-Jx-3li" secondAttribute="top" id="MDv-mb-73G"/>
-                            <constraint firstAttribute="trailing" secondItem="uev-u3-FSH" secondAttribute="trailing" id="QyJ-fD-nvn"/>
-                            <constraint firstItem="uev-u3-FSH" firstAttribute="leading" secondItem="oew-Jx-3li" secondAttribute="leading" id="S3H-dz-Id0"/>
+                            <constraint firstItem="uev-u3-FSH" firstAttribute="leading" secondItem="oew-Jx-3li" secondAttribute="leading" id="4Yh-7r-WZe"/>
+                            <constraint firstAttribute="centerY" secondItem="lMv-MN-vd7" secondAttribute="centerY" id="AN2-zy-Dxd"/>
+                            <constraint firstItem="uev-u3-FSH" firstAttribute="top" secondItem="IPt-7O-L0w" secondAttribute="bottom" id="NcF-w0-tGB"/>
+                            <constraint firstItem="1B4-OQ-GNo" firstAttribute="top" secondItem="uev-u3-FSH" secondAttribute="bottom" id="Z4o-bw-uCa"/>
+                            <constraint firstAttribute="centerX" secondItem="lMv-MN-vd7" secondAttribute="centerX" id="jEH-Yc-7ND"/>
+                            <constraint firstAttribute="trailing" secondItem="uev-u3-FSH" secondAttribute="trailing" id="xls-pL-wuc"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="PlayLists of Channel" id="pca-Zi-QzY"/>
                     <connections>
+                        <outlet property="indicator" destination="lMv-MN-vd7" id="bNs-Ia-m4a"/>
                         <outlet property="playlistTableView" destination="uev-u3-FSH" id="69d-Zp-nOg"/>
                         <segue destination="ucE-IW-StO" kind="push" identifier="segueVideo" id="K2j-0G-4rT"/>
                     </connections>

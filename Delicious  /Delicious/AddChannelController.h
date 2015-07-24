@@ -20,7 +20,6 @@
 
 @property (strong) NSManagedObject *channel;
 
-- (IBAction)done:(id)sender;
 - (IBAction)saveChannel:(id)sender;
 
 @end

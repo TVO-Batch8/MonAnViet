@@ -35,7 +35,7 @@ static NSString *cellChannelID=@"cellChannelID";
     [super viewDidAppear:animated];
     self.addChannelTable.backgroundColor = [UIColor grayColor];
     self.view.backgroundColor = [UIColor whiteColor];
-       [[NSNotificationCenter defaultCenter] postNotificationName:@"handleNetworkStatusNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"handleNetworkStatusNotification" object:nil];
     [self.addChannelTable reloadData];
 }
 
@@ -58,10 +58,16 @@ static NSString *cellChannelID=@"cellChannelID";
     if (!cell) {
         cell = [tableView dequeueReusableCellWithIdentifier:cellChannelID];
     }
-    
-    cell.channelImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[[self.arrAddChannel objectAtIndex:1]objectAtIndex:indexPath.row]]]];
     cell.channelTitle.text = [NSString stringWithFormat:@"%@",[[self.arrAddChannel objectAtIndex:2]objectAtIndex:indexPath.row]];
     cell.channelID.text = [NSString stringWithFormat:@"%@",[[self.arrAddChannel objectAtIndex:3]objectAtIndex:indexPath.row]];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSData *imageData=[NSData dataWithContentsOfURL:[NSURL URLWithString:[[self.arrAddChannel objectAtIndex:1]objectAtIndex:indexPath.row]]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            cell.channelImage.image = [UIImage imageWithData:imageData];
+            
+        });
+    });
     return cell;
     
 }
@@ -72,10 +78,6 @@ static NSString *cellChannelID=@"cellChannelID";
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-}
-
-- (IBAction)done:(id)sender {
-    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (IBAction)saveChannel:(id)sender {
@@ -94,7 +96,7 @@ static NSString *cellChannelID=@"cellChannelID";
     NSLog(@"%@",date);
     
     [newChannel setValue:date forKey:@"timeChannel"];
-   
+    
     [newChannel setValue:[[self.arrAddChannel objectAtIndex:0] objectAtIndex:[self.addChannelTable indexPathForSelectedRow].row] forKey:@"idChannel"];
     
     NSLog(@"%ld",(long)[self.addChannelTable indexPathForSelectedRow].row);
@@ -103,9 +105,8 @@ static NSString *cellChannelID=@"cellChannelID";
     if (![context save:&error]) {
         NSLog(@"Can't Save! %@ %@", error, [error localizedDescription]);
     }
-     NSLog(@"Save successful");
-    [self dismissViewControllerAnimated:YES completion:nil];
-
+    NSLog(@"Save successful");
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 @end

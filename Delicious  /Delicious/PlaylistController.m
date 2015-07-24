@@ -31,7 +31,7 @@ static NSString *cellChannelID=@"cellChannelID";
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     self.playlistTableView.backgroundColor = [UIColor grayColor];
-     self.view.backgroundColor = [UIColor   brownColor ];
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"black.jpg"]];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"handleNetworkStatusNotification" object:nil];
 
     [self.playlistTableView reloadData];
@@ -73,11 +73,17 @@ static NSString *cellChannelID=@"cellChannelID";
     if (!cell) {
         cell = [tableView dequeueReusableCellWithIdentifier:cellChannelID forIndexPath:indexPath];
     }
-    
-    cell.channelImage.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[[self.arrPlaylist objectAtIndex:1] objectAtIndex:indexPath.row]]]];
     cell.channelTitle.text = [NSString stringWithFormat:@"%@",[[self.arrPlaylist objectAtIndex:2] objectAtIndex:indexPath.row]];
     cell.channelID.text = [NSString stringWithFormat:@"%@",[[self.arrPlaylist objectAtIndex:3] objectAtIndex:indexPath.row]];
     
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSData *imageData=[NSData dataWithContentsOfURL:[NSURL URLWithString:[[self.arrPlaylist objectAtIndex:1] objectAtIndex:indexPath.row]]];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            cell.channelImage.image = [UIImage imageWithData:imageData];
+            
+        });
+    });
+
     return cell;
     
 }
@@ -94,6 +100,8 @@ static NSString *cellChannelID=@"cellChannelID";
     [self.arrTimeVideo removeAllObjects];
     [self.arrTitleChannel removeAllObjects];
     [self.arrTitleVideo removeAllObjects];
+    [self.indicator startAnimating];
+    self.playlistTableView.hidden=YES;
     [self getVideoID:[[self.arrPlaylist objectAtIndex:0]objectAtIndex:indexPath.row]];
     
     plID= [[self.arrPlaylist objectAtIndex:0]objectAtIndex:indexPath.row];
@@ -225,6 +233,8 @@ static NSString *cellChannelID=@"cellChannelID";
             [self.arrTitleVideo addObject:titleVideo];
             NSLog(@"title Video %@",titleVideo);
         }
+        [self.indicator stopAnimating];
+        self.playlistTableView.hidden=NO;
         [self performSegueWithIdentifier:@"segueVideo" sender:self];
     }
     else if([[self.requestGoogle allKeys] containsObject:@"nextPageToken"]&&![[self.requestGoogle allKeys] containsObject:@"prevPageToken"]){
@@ -337,7 +347,8 @@ static NSString *cellChannelID=@"cellChannelID";
             [self.arrTitleVideo addObject:titleVideo];
             NSLog(@"title Video %@",titleVideo);
         }
-       
+         [self.indicator stopAnimating];
+        self.playlistTableView.hidden=NO;
             [self performSegueWithIdentifier:@"segueVideo" sender:self];
  
     }
